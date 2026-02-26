@@ -1,0 +1,177 @@
+{% extends 'autocareapp/userhomepage.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-5">
+  <h2 class="mb-4 text-center">Edit Vehicle</h2>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form method="POST" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Brand</label>
+          <select name="brand" class="form-select" id="brandSelect" required>
+            <option value="">Select Brand</option>
+            <option value="Maruti Suzuki" {% if vehicle.brand == "Maruti Suzuki" %}selected{% endif %}>Maruti Suzuki</option>
+            <option value="Hyundai" {% if vehicle.brand == "Hyundai" %}selected{% endif %}>Hyundai</option>
+            <option value="Honda" {% if vehicle.brand == "Honda" %}selected{% endif %}>Honda</option>
+            <option value="Toyota" {% if vehicle.brand == "Toyota" %}selected{% endif %}>Toyota</option>
+            <option value="Tata" {% if vehicle.brand == "Tata" %}selected{% endif %}>Tata</option>
+            <option value="Mahindra" {% if vehicle.brand == "Mahindra" %}selected{% endif %}>Mahindra</option>
+            <option value="Kia" {% if vehicle.brand == "Kia" %}selected{% endif %}>Kia</option>
+            <option value="Ford" {% if vehicle.brand == "Ford" %}selected{% endif %}>Ford</option>
+            <option value="Renault" {% if vehicle.brand == "Renault" %}selected{% endif %}>Renault</option>
+            <option value="Nissan" {% if vehicle.brand == "Nissan" %}selected{% endif %}>Nissan</option>
+            <option value="Skoda" {% if vehicle.brand == "Skoda" %}selected{% endif %}>Skoda</option>
+            <option value="MG" {% if vehicle.brand == "MG" %}selected{% endif %}>MG</option>
+            <option value="Jeep" {% if vehicle.brand == "Jeep" %}selected{% endif %}>Jeep</option>
+            <option value="Mercedes-Benz" {% if vehicle.brand == "Mercedes-Benz" %}selected{% endif %}>Mercedes-Benz</option>
+            <option value="BMW" {% if vehicle.brand == "BMW" %}selected{% endif %}>BMW</option>
+            <option value="Audi" {% if vehicle.brand == "Audi" %}selected{% endif %}>Audi</option>
+            <option value="Fiat" {% if vehicle.brand == "Fiat" %}selected{% endif %}>Fiat</option>
+            <option value="Datsun" {% if vehicle.brand == "Datsun" %}selected{% endif %}>Datsun</option>
+            <option value="Isuzu" {% if vehicle.brand == "Isuzu" %}selected{% endif %}>Isuzu</option>
+            <option value="Jaguar" {% if vehicle.brand == "Jaguar" %}selected{% endif %}>Jaguar</option>
+            <option value="Land Rover" {% if vehicle.brand == "Land Rover" %}selected{% endif %}>Land Rover</option>
+            <option value="Lexus" {% if vehicle.brand == "Lexus" %}selected{% endif %}>Lexus</option>
+            <option value="Mini" {% if vehicle.brand == "Mini" %}selected{% endif %}>Mini</option>
+            <option value="Mitsubishi" {% if vehicle.brand == "Mitsubishi" %}selected{% endif %}>Mitsubishi</option>
+            <option value="Porsche" {% if vehicle.brand == "Porsche" %}selected{% endif %}>Porsche</option>
+            <option value="Volvo" {% if vehicle.brand == "Volvo" %}selected{% endif %}>Volvo</option>
+            <option value="Other" {% if vehicle.brand not in brandModels %}selected{% endif %}>Other</option>
+          </select>
+          <input type="text" name="brand_other" id="brandOtherInput" class="form-control mt-2 d-none" placeholder="Enter Brand" value="{% if vehicle.brand not in brandModels %}{{ vehicle.brand }}{% endif %}" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Model</label>
+          <select name="model" class="form-select" id="modelSelect" required>
+            <option value="">Select Model</option>
+            <!-- Options will be populated by JS -->
+          </select>
+          <input type="text" name="model_other" id="modelOtherInput" class="form-control mt-2 d-none" placeholder="Enter Model" value="{{ vehicle.model }}" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Year</label>
+          <input type="number" name="year" class="form-control" min="1900" max="2099" required value="{{ vehicle.year }}">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Vehicle Number</label>
+          <input type="text" name="vehicle_number" class="form-control" required value="{{ vehicle.vehicle_number }}">
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Update Vehicle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const brandModels = {
+     "Maruti Suzuki": ["Swift", "Baleno", "Dzire", "Ertiga", "Wagon R", "Alto", "Celerio", "S-Presso", "Vitara Brezza", "XL6", "Ignis", "Ciaz", "Fronx", "Grand Vitara", "Other"],
+    "Hyundai": ["Creta", "i20", "i10", "Venue", "Verna", "Aura", "Tucson", "Santro", "Alcazar", "Elantra", "Kona", "Other"],
+    "Honda": ["City", "Amaze", "Jazz", "WR-V", "Civic", "CR-V", "BR-V", "Accord", "Brio", "Other"],
+    "Toyota": ["Innova", "Fortuner", "Glanza", "Urban Cruiser", "Yaris", "Etios", "Camry", "Corolla", "Hilux", "Other"],
+    "Tata": ["Altroz", "Nexon", "Tiago", "Harrier", "Safari", "Tigor", "Punch", "Hexa", "Zest", "Bolt", "Other"],
+    "Mahindra": ["Scorpio", "XUV500", "Bolero", "Thar", "XUV300", "Marazzo", "KUV100", "XUV700", "TUV300", "Other"],
+    "Kia": ["Seltos", "Sonet", "Carnival", "Carens", "EV6", "Other"],
+    "Ford": ["Figo", "EcoSport", "Endeavour", "Aspire", "Freestyle", "Fiesta", "Ikon", "Other"],
+    "Volkswagen": ["Polo", "Vento", "Taigun", "Tiguan", "Virtus", "Jetta", "Passat", "Other"],
+    "Renault": ["Kwid", "Duster", "Triber", "Kiger", "Lodgy", "Captur", "Other"],
+    "Nissan": ["Magnite", "Kicks", "Terrano", "Micra", "Sunny", "Other"],
+    "Skoda": ["Rapid", "Octavia", "Superb", "Kushaq", "Slavia", "Kodiaq", "Other"],
+    "MG": ["Hector", "ZS EV", "Gloster", "Astor", "Other"],
+    "Jeep": ["Compass", "Meridian", "Wrangler", "Grand Cherokee", "Other"],
+    "Mercedes-Benz": ["A-Class", "C-Class", "E-Class", "S-Class", "GLA", "GLC", "GLE", "GLS", "Other"],
+    "BMW": ["3 Series", "5 Series", "7 Series", "X1", "X3", "X5", "Other"],
+    "Audi": ["A3", "A4", "A6", "Q3", "Q5", "Q7", "Other"],
+    "Chevrolet": ["Beat", "Spark", "Cruze", "Sail", "Enjoy", "Tavera", "Other"],
+    "Fiat": ["Punto", "Linea", "Avventura", "Urban Cross", "Other"],
+    "Datsun": ["Go", "Go Plus", "Redi-Go", "Other"],
+    "Isuzu": ["D-Max", "MU-X", "Other"],
+    "Jaguar": ["XE", "XF", "XJ", "F-Pace", "F-Type", "Other"],
+    "Land Rover": ["Discovery", "Range Rover", "Defender", "Evoque", "Velar", "Other"],
+    "Lexus": ["ES", "NX", "RX", "LS", "Other"],
+    "Mini": ["Cooper", "Countryman", "Convertible", "Other"],
+    "Mitsubishi": ["Pajero", "Outlander", "Montero", "Other"],
+    "Porsche": ["Cayenne", "Macan", "Panamera", "911", "Other"],
+    "Volvo": ["XC40", "XC60", "XC90", "S60", "S90", "Other"],
+    "Other": ["Other"]
+  };
+
+  // Helper to get Django variable in JS
+  const vehicleBrand = "{{ vehicle.brand|escapejs }}";
+  const vehicleModel = "{{ vehicle.model|escapejs }}";
+
+  const brandSelect = document.getElementById('brandSelect');
+  const modelSelect = document.getElementById('modelSelect');
+  const brandOtherInput = document.getElementById('brandOtherInput');
+  const modelOtherInput = document.getElementById('modelOtherInput');
+
+  // Populate models on brand change
+  function populateModels(selectedModel) {
+    const brand = brandSelect.value;
+    modelSelect.innerHTML = '<option value="">Select Model</option>';
+    if (brandModels[brand]) {
+      brandModels[brand].forEach(function(model) {
+        const opt = document.createElement('option');
+        opt.value = model;
+        opt.textContent = model;
+        if (model === selectedModel) {
+          opt.selected = true;
+        }
+        modelSelect.appendChild(opt);
+      });
+    }
+  }
+
+  // Initial setup for edit
+  if (brandModels[vehicleBrand]) {
+    brandSelect.value = vehicleBrand;
+    populateModels(vehicleModel);
+    brandOtherInput.classList.add('d-none');
+    brandOtherInput.required = false;
+  } else {
+    brandSelect.value = "Other";
+    brandOtherInput.classList.remove('d-none');
+    brandOtherInput.required = true;
+  }
+
+  // Show/hide brand "Other" input
+  brandSelect.addEventListener('change', function() {
+    if (this.value === 'Other') {
+      brandOtherInput.classList.remove('d-none');
+      brandOtherInput.required = true;
+    } else {
+      brandOtherInput.classList.add('d-none');
+      brandOtherInput.required = false;
+      brandOtherInput.value = '';
+    }
+    populateModels('');
+    modelOtherInput.classList.add('d-none');
+    modelOtherInput.required = false;
+    modelOtherInput.value = '';
+  });
+
+  // Show/hide model "Other" input
+  modelSelect.addEventListener('change', function() {
+    if (this.value === 'Other') {
+      modelOtherInput.classList.remove('d-none');
+      modelOtherInput.required = true;
+    } else {
+      modelOtherInput.classList.add('d-none');
+      modelOtherInput.required = false;
+      modelOtherInput.value = '';
+    }
+  });
+
+  // If model is not in the list, show "Other" input and set value
+  if (brandModels[vehicleBrand] && brandModels[vehicleBrand].indexOf(vehicleModel) === -1) {
+    modelSelect.value = "Other";
+    modelOtherInput.classList.remove('d-none');
+    modelOtherInput.required = true;
+  }
+});
+</script>
+{% endblock %}

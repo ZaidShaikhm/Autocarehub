@@ -1,0 +1,264 @@
+{% extends 'autocareapp/userhomepage.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  /* Existing styles remain the same */
+  .service-card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  .service-card.selected {
+    border: 2px solid #198754;
+    box-shadow: 0 0 20px rgba(25, 135, 84, 0.2);
+  }
+  .book-btn {
+    background: linear-gradient(135deg, #198754, #2ecc71);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .book-btn:hover {
+    background: linear-gradient(135deg, #157347, #28a745);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+  }
+  .form-select, .form-control {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    transition: all 0.3s;
+  }
+  .form-select:focus, .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #3a5bd9, #1a3ab5);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+  }
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .page-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+  .page-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #4e73df, #224abe);
+    border-radius: 2px;
+  }
+</style>
+
+<div class="container py-5 fade-in">
+  <h2 class="page-title text-center">Book a Service</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% else %}bi-exclamation-triangle-fill{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <form method="POST" action="" id="bookServiceForm">
+        {% csrf_token %}
+        <input type="hidden" name="service_id" id="selectedServiceId" required>
+
+        <div class="mb-4">
+          <h4 class="mb-3"><i class="bi bi-tools me-2"></i> Choose a Service</h4>
+          <div class="row g-4" id="serviceCards">
+            {% for service in services %}
+              <div class="col-md-6">
+                <div class="card h-100 shadow-sm service-card" data-service-id="{{ service.id }}">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <h5 class="card-title mb-0">{{ service.name }}</h5>
+                      <span class="badge bg-primary rounded-pill">₹{{ service.amount }}</span>
+                    </div>
+                    <p class="card-text text-muted mb-3">{{ service.description|truncatewords:20 }}</p>
+                    <button type="button" class="btn btn-success w-100 book-btn"
+                      data-service-id="{{ service.id }}"
+                      data-service-name="{{ service.name|escapejs }}">
+                      <i class="bi bi-calendar-check me-2"></i> Book Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div id="vehicleSelectionSection" class="d-none">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h4 class="mb-3"><i class="bi bi-car-front me-2"></i> Vehicle Information</h4>
+
+              <div class="mb-3">
+                <label class="form-label fw-medium">Select Vehicle</label>
+                <select name="vehicle_id" class="form-select" id="vehicleSelect" required>
+                  <option value="">-- Select Vehicle --</option>
+                  {% for vehicle in vehicles %}
+                    <option value="{{ vehicle.id }}">{{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.vehicle_number }})</option>
+                  {% endfor %}
+                  <option value="add_new">Add New Vehicle</option>
+                </select>
+              </div>
+
+              <div id="newVehicleFields" class="d-none">
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Brand</label>
+                  <select name="brand" class="form-select" id="brandSelect">
+                    <option value="">Select Brand</option>
+                    <option value="Maruti Suzuki">Maruti Suzuki</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <input type="text" name="brand_other" id="brandOtherInput" class="form-control mt-2 d-none" placeholder="Enter Brand" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Model</label>
+                  <select name="model" class="form-select" id="modelSelect">
+                    <option value="">Select Model</option>
+                  </select>
+                  <input type="text" name="model_other" id="modelOtherInput" class="form-control mt-2 d-none" placeholder="Enter Model" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Vehicle Number</label>
+                  <input type="text" name="vehicle_number" class="form-control" placeholder="Enter Vehicle Number (e.g. MH01AB1234)">
+                </div>
+              </div>
+
+              <!-- ✅ Booking Date -->
+              <div class="mb-3">
+                <label class="form-label fw-medium">Booking Date</label>
+                <input type="date" name="booking_date" id="bookingDate" class="form-control" required>
+              </div>
+
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary py-3">
+                  <i class="bi bi-check-circle me-2"></i> Confirm Booking
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Disable past dates
+  const bookingDateInput = document.getElementById('bookingDate');
+  const today = new Date().toISOString().split('T')[0];
+  bookingDateInput.setAttribute('min', today);
+
+  // Select service
+  document.querySelectorAll('.book-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.service-card').forEach(card => card.classList.remove('selected'));
+      const card = this.closest('.service-card');
+      card.classList.add('selected');
+      document.getElementById('selectedServiceId').value = this.dataset.serviceId;
+      document.getElementById('vehicleSelectionSection').classList.remove('d-none');
+      document.getElementById('vehicleSelectionSection').scrollIntoView({ behavior: 'smooth' });
+      Swal.fire({ icon: 'success', title: 'Service Selected', text: `You've selected ${this.dataset.serviceName}`, timer: 1500, showConfirmButton: false });
+    });
+  });
+
+  // Vehicle field toggle
+  document.getElementById('vehicleSelect').addEventListener('change', function () {
+    const show = this.value === 'add_new';
+    document.getElementById('newVehicleFields').classList.toggle('d-none', !show);
+    Array.from(document.querySelectorAll('#newVehicleFields input, #newVehicleFields select')).forEach(i => i.required = show);
+  });
+
+  // Brand/Model logic
+  const brandModels = {
+    "Maruti Suzuki": ["Swift", "Baleno", "Other"],
+    "Hyundai": ["i20", "Creta", "Other"],
+    "Other": ["Other"]
+  };
+  const brand = document.getElementById('brandSelect');
+  const model = document.getElementById('modelSelect');
+  const brandOther = document.getElementById('brandOtherInput');
+  const modelOther = document.getElementById('modelOtherInput');
+
+  brand.addEventListener('change', function () {
+    brandOther.classList.toggle('d-none', this.value !== 'Other');
+    brandOther.required = (this.value === 'Other');
+    model.innerHTML = '<option value="">Select Model</option>';
+    if (brandModels[this.value]) {
+      brandModels[this.value].forEach(m => {
+        const o = document.createElement('option');
+        o.value = m;
+        o.textContent = m;
+        model.appendChild(o);
+      });
+    }
+  });
+
+  model.addEventListener('change', function () {
+    modelOther.classList.toggle('d-none', this.value !== 'Other');
+    modelOther.required = (this.value === 'Other');
+  });
+
+  // Uppercase vehicle number
+  document.querySelector('input[name="vehicle_number"]').addEventListener('input', function () {
+    this.value = this.value.toUpperCase();
+  });
+
+  // ✅ Validate Booking Date
+  document.getElementById('bookServiceForm').addEventListener('submit', function (e) {
+    const date = document.getElementById('bookingDate').value;
+    if (!date) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Booking Date Required',
+        text: 'Please select a booking date before confirming.',
+        confirmButtonColor: '#198754'
+      });
+    }
+  });
+});
+</script>
+
+{% endblock %}

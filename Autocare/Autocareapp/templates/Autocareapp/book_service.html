@@ -1,0 +1,370 @@
+{% extends 'autocareapp/userhomepage.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  .service-card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  
+  .service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .service-card.selected {
+    border: 2px solid #198754;
+    box-shadow: 0 0 20px rgba(25, 135, 84, 0.2);
+    transform: translateY(-5px);
+  }
+  
+  .book-btn {
+    background: linear-gradient(135deg, #198754, #2ecc71);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  
+  .book-btn:hover {
+    background: linear-gradient(135deg, #157347, #28a745);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+  }
+  
+  .form-select, .form-control {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    transition: all 0.3s;
+  }
+  
+  .form-select:focus, .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #3a5bd9, #1a3ab5);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .page-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+  
+  .page-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #4e73df, #224abe);
+    border-radius: 2px;
+  }
+</style>
+
+<div class="container py-5 fade-in">
+  <h2 class="page-title text-center">Book a Service</h2>
+  
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% else %}bi-exclamation-triangle-fill{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <form method="POST" action="" id="bookServiceForm">
+        {% csrf_token %}
+        <input type="hidden" name="service_id" id="selectedServiceId" required>
+
+        <!-- Services as Cards -->
+        <div class="mb-4">
+          <h4 class="mb-3"><i class="bi bi-tools me-2"></i> Choose a Service</h4>
+          <div class="row g-4" id="serviceCards">
+            {% for service in services %}
+              <div class="col-md-6">
+                <div class="card h-100 shadow-sm service-card" data-service-id="{{ service.id }}">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <h5 class="card-title mb-0">{{ service.name }}</h5>
+                      <span class="badge bg-primary rounded-pill">₹{{ service.price }}</span>
+                    </div>
+                    <p class="card-text text-muted mb-3">{{ service.description|truncatewords:20 }}</p>
+                    <button type="button" class="btn btn-success w-100 book-btn"
+                      data-service-id="{{ service.id }}"
+                      data-service-name="{{ service.name|escapejs }}">
+                      <i class="bi bi-calendar-check me-2"></i> Book Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Vehicle Selection (initially hidden) -->
+        <div id="vehicleSelectionSection" class="d-none">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h4 class="mb-3"><i class="bi bi-car-front me-2"></i> Vehicle Information</h4>
+              
+              <!-- Vehicle Selection -->
+              <div class="mb-4">
+                <label class="form-label fw-medium">Select Vehicle</label>
+                <select name="vehicle_id" class="form-select" id="vehicleSelect" required>
+                  <option value="">-- Select Vehicle --</option>
+                  {% for vehicle in vehicles %}
+                    <option value="{{ vehicle.id }}">{{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.vehicle_number }})</option>
+                  {% endfor %}
+                  <option value="add_new">Add New Vehicle</option>
+                </select>
+              </div>
+
+              <!-- New Vehicle Fields -->
+              <div id="newVehicleFields" class="d-none">
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Brand</label>
+                  <select name="brand" class="form-select" id="brandSelect">
+                    <option value="">Select Brand</option>
+                    <option value="Maruti Suzuki">Maruti Suzuki</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Tata">Tata</option>
+                    <option value="Mahindra">Mahindra</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Ford">Ford</option>
+                    <option value="Volkswagen">Volkswagen</option>
+                    <option value="Renault">Renault</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Skoda">Skoda</option>
+                    <option value="MG">MG</option>
+                    <option value="Jeep">Jeep</option>
+                    <option value="Mercedes-Benz">Mercedes-Benz</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Audi">Audi</option>
+                    <option value="Chevrolet">Chevrolet</option>
+                    <option value="Fiat">Fiat</option>
+                    <option value="Datsun">Datsun</option>
+                    <option value="Isuzu">Isuzu</option>
+                    <option value="Jaguar">Jaguar</option>
+                    <option value="Land Rover">Land Rover</option>
+                    <option value="Lexus">Lexus</option>
+                    <option value="Mini">Mini</option>
+                    <option value="Mitsubishi">Mitsubishi</option>
+                    <option value="Porsche">Porsche</option>
+                    <option value="Volvo">Volvo</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <input type="text" name="brand_other" id="brandOtherInput" class="form-control mt-2 d-none" placeholder="Enter Brand" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Model</label>
+                  <select name="model" class="form-select" id="modelSelect">
+                    <option value="">Select Model</option>
+                  </select>
+                  <input type="text" name="model_other" id="modelOtherInput" class="form-control mt-2 d-none" placeholder="Enter Model" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium">Vehicle Number</label>
+                  <input type="text" name="vehicle_number" class="form-control" placeholder="Enter Vehicle Number (e.g. MH01AB1234)">
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary py-3">
+                  <i class="bi bi-check-circle me-2"></i> Confirm Booking
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Service selection logic
+  document.querySelectorAll('.book-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      // Remove highlight from all cards
+      document.querySelectorAll('.service-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // Highlight selected card
+      const card = this.closest('.service-card');
+      card.classList.add('selected');
+      
+      // Set hidden input
+      document.getElementById('selectedServiceId').value = this.dataset.serviceId;
+      
+      // Show vehicle selection section
+      document.getElementById('vehicleSelectionSection').classList.remove('d-none');
+      
+      // Scroll to vehicle selection
+      document.getElementById('vehicleSelectionSection').scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'center'
+      });
+      
+      // Show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Service Selected',
+        text: `You've selected ${this.dataset.serviceName}`,
+        showConfirmButton: false,
+        timer: 1500
+      });
+    });
+  });
+
+  // Show/hide new vehicle fields
+  const vehicleSelect = document.getElementById('vehicleSelect');
+  const newVehicleFields = document.getElementById('newVehicleFields');
+  
+  vehicleSelect.addEventListener('change', function() {
+    if (this.value === 'add_new') {
+      newVehicleFields.classList.remove('d-none');
+      Array.from(newVehicleFields.querySelectorAll('input,select')).forEach(input => {
+        input.required = true;
+      });
+    } else {
+      newVehicleFields.classList.add('d-none');
+      Array.from(newVehicleFields.querySelectorAll('input,select')).forEach(input => {
+        input.required = false;
+      });
+    }
+  });
+
+  // Brand and model dropdown logic
+  const brandModels = {
+    "Maruti Suzuki": ["Swift", "Baleno", "Dzire", "Ertiga", "Wagon R", "Alto", "Celerio", "S-Presso", "Vitara Brezza", "XL6", "Ignis", "Ciaz", "Fronx", "Grand Vitara", "Other"],
+    "Hyundai": ["Creta", "i20", "i10", "Venue", "Verna", "Aura", "Tucson", "Santro", "Alcazar", "Elantra", "Kona", "Other"],
+    "Honda": ["City", "Amaze", "Jazz", "WR-V", "Civic", "CR-V", "BR-V", "Accord", "Brio", "Other"],
+    "Toyota": ["Innova", "Fortuner", "Glanza", "Urban Cruiser", "Yaris", "Etios", "Camry", "Corolla", "Hilux", "Other"],
+    "Tata": ["Altroz", "Nexon", "Tiago", "Harrier", "Safari", "Tigor", "Punch", "Hexa", "Zest", "Bolt", "Other"],
+    "Mahindra": ["Scorpio", "XUV500", "Bolero", "Thar", "XUV300", "Marazzo", "KUV100", "XUV700", "TUV300", "Other"],
+    "Kia": ["Seltos", "Sonet", "Carnival", "Carens", "EV6", "Other"],
+    "Ford": ["Figo", "EcoSport", "Endeavour", "Aspire", "Freestyle", "Fiesta", "Ikon", "Other"],
+    "Volkswagen": ["Polo", "Vento", "Taigun", "Tiguan", "Virtus", "Jetta", "Passat", "Other"],
+    "Renault": ["Kwid", "Duster", "Triber", "Kiger", "Lodgy", "Captur", "Other"],
+    "Nissan": ["Magnite", "Kicks", "Terrano", "Micra", "Sunny", "Other"],
+    "Skoda": ["Rapid", "Octavia", "Superb", "Kushaq", "Slavia", "Kodiaq", "Other"],
+    "MG": ["Hector", "ZS EV", "Gloster", "Astor", "Other"],
+    "Jeep": ["Compass", "Meridian", "Wrangler", "Grand Cherokee", "Other"],
+    "Mercedes-Benz": ["A-Class", "C-Class", "E-Class", "S-Class", "GLA", "GLC", "GLE", "GLS", "Other"],
+    "BMW": ["3 Series", "5 Series", "7 Series", "X1", "X3", "X5", "Other"],
+    "Audi": ["A3", "A4", "A6", "Q3", "Q5", "Q7", "Other"],
+    "Chevrolet": ["Beat", "Spark", "Cruze", "Sail", "Enjoy", "Tavera", "Other"],
+    "Fiat": ["Punto", "Linea", "Avventura", "Urban Cross", "Other"],
+    "Datsun": ["Go", "Go Plus", "Redi-Go", "Other"],
+    "Isuzu": ["D-Max", "MU-X", "Other"],
+    "Jaguar": ["XE", "XF", "XJ", "F-Pace", "F-Type", "Other"],
+    "Land Rover": ["Discovery", "Range Rover", "Defender", "Evoque", "Velar", "Other"],
+    "Lexus": ["ES", "NX", "RX", "LS", "Other"],
+    "Mini": ["Cooper", "Countryman", "Convertible", "Other"],
+    "Mitsubishi": ["Pajero", "Outlander", "Montero", "Other"],
+    "Porsche": ["Cayenne", "Macan", "Panamera", "911", "Other"],
+    "Volvo": ["XC40", "XC60", "XC90", "S60", "S90", "Other"],
+    "Other": ["Other"]
+  };
+
+  const brandSelect = document.getElementById('brandSelect');
+  const modelSelect = document.getElementById('modelSelect');
+  const brandOtherInput = document.getElementById('brandOtherInput');
+  const modelOtherInput = document.getElementById('modelOtherInput');
+
+  brandSelect.addEventListener('change', function() {
+    const brand = this.value;
+
+    // Show/hide "Other" input for brand
+    if (brand === 'Other') {
+      brandOtherInput.classList.remove('d-none');
+      brandOtherInput.required = true;
+    } else {
+      brandOtherInput.classList.add('d-none');
+      brandOtherInput.required = false;
+      brandOtherInput.value = '';
+    }
+
+    // Clear and repopulate model options
+    modelSelect.innerHTML = '<option value="">Select Model</option>';
+    if (brandModels[brand]) {
+      brandModels[brand].forEach(function(model) {
+        const opt = document.createElement('option');
+        opt.value = model;
+        opt.textContent = model;
+        modelSelect.appendChild(opt);
+      });
+    }
+
+    // Hide model "Other" input on brand change
+    modelOtherInput.classList.add('d-none');
+    modelOtherInput.required = false;
+    modelOtherInput.value = '';
+  });
+
+  modelSelect.addEventListener('change', function() {
+    if (this.value === 'Other') {
+      modelOtherInput.classList.remove('d-none');
+      modelOtherInput.required = true;
+    } else {
+      modelOtherInput.classList.add('d-none');
+      modelOtherInput.required = false;
+      modelOtherInput.value = '';
+    }
+  });
+
+  // Auto-uppercase for vehicle number
+  document.querySelector('input[name="vehicle_number"]').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+
+  // Form submission loading state
+  document.getElementById('bookServiceForm').addEventListener('submit', function() {
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+    submitBtn.disabled = true;
+  });
+});
+</script>
+
+{% endblock %}

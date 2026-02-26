@@ -1,0 +1,345 @@
+{% extends 'autocareapp/userhomepage.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  .form-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .form-container:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .form-select, .form-control {
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 12px 15px;
+    transition: all 0.3s;
+    font-size: 15px;
+  }
+  
+  .form-select:focus, .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.15);
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.2);
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #3e63cf 0%, #123aae 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 115, 223, 0.3);
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .other-input {
+    margin-top: 0.8rem;
+    animation: fadeIn 0.4s ease-out;
+  }
+  
+  .page-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+  
+  .page-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #4e73df, #224abe);
+    border-radius: 2px;
+  }
+  
+  .select-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #6c757d;
+  }
+  
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+  }
+  
+  .icon-input {
+    padding-left: 40px !important;
+  }
+</style>
+
+<div class="container py-5 fade-in">
+  <h2 class="page-title text-center" style="color: #2c3e50;">Add New Vehicle</h2>
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="form-container">
+        <form method="POST" action="">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label class="form-label">Brand</label>
+            <div class="position-relative">
+              <select name="brand" class="form-select" id="brandSelect" required>
+                <option value="" disabled selected>Select Brand</option>
+                <option value="Maruti Suzuki">Maruti Suzuki</option>
+                <option value="Hyundai">Hyundai</option>
+                <option value="Honda">Honda</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Tata">Tata</option>
+                <option value="Mahindra">Mahindra</option>
+                <option value="Kia">Kia</option>
+                <option value="Ford">Ford</option>
+                <option value="Volkswagen">Volkswagen</option>
+                <option value="Renault">Renault</option>
+                <option value="Nissan">Nissan</option>
+                <option value="Skoda">Skoda</option>
+                <option value="MG">MG</option>
+                <option value="Jeep">Jeep</option>
+                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                <option value="BMW">BMW</option>
+                <option value="Audi">Audi</option>
+                <option value="Chevrolet">Chevrolet</option>
+                <option value="Fiat">Fiat</option>
+                <option value="Datsun">Datsun</option>
+                <option value="Isuzu">Isuzu</option>
+                <option value="Jaguar">Jaguar</option>
+                <option value="Land Rover">Land Rover</option>
+                <option value="Lexus">Lexus</option>
+                <option value="Mini">Mini</option>
+                <option value="Mitsubishi">Mitsubishi</option>
+                <option value="Porsche">Porsche</option>
+                <option value="Volvo">Volvo</option>
+                <option value="Other">Other</option>
+              </select>
+              <i class="bi bi-chevron-down select-icon"></i>
+            </div>
+            <div id="brandOtherContainer" class="other-input" style="display: none;">
+              <div class="position-relative">
+                <i class="bi bi-car-front input-icon"></i>
+                <input type="text" name="brand_other" id="brandOtherInput" class="form-control icon-input" placeholder="Enter Brand Name">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Model</label>
+            <div class="position-relative">
+              <select name="model" class="form-select" id="modelSelect" required disabled>
+                <option value="" disabled selected>Select Brand First</option>
+              </select>
+              <i class="bi bi-chevron-down select-icon"></i>
+            </div>
+            <div id="modelOtherContainer" class="other-input" style="display: none;">
+              <div class="position-relative">
+                <i class="bi bi-tag input-icon"></i>
+                <input type="text" name="model_other" id="modelOtherInput" class="form-control icon-input" placeholder="Enter Model Name">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Year</label>
+            <div class="position-relative">
+              <i class="bi bi-calendar input-icon"></i>
+              <input type="number" name="year" class="form-control icon-input" min="1900" max="{% now 'Y' %}" placeholder="{% now 'Y' %}" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Vehicle Number</label>
+            <div class="position-relative">
+              <i class="bi bi-123 input-icon"></i>
+              <input type="text" name="vehicle_number" class="form-control icon-input" placeholder="e.g. MH01AB1234" required>
+            </div>
+          </div>
+          
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary py-3">
+              <i class="bi bi-car-front me-2"></i> Add Vehicle
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const brandModels = {
+    "Maruti Suzuki": ["Swift", "Baleno", "Dzire", "Ertiga", "Wagon R", "Alto", "Celerio", "S-Presso", "Vitara Brezza", "XL6", "Ignis", "Ciaz", "Fronx", "Grand Vitara", "Other"],
+    "Hyundai": ["Creta", "i20", "i10", "Venue", "Verna", "Aura", "Tucson", "Santro", "Alcazar", "Elantra", "Kona", "Other"],
+    "Honda": ["City", "Amaze", "Jazz", "WR-V", "Civic", "CR-V", "BR-V", "Accord", "Brio", "Other"],
+    "Toyota": ["Innova", "Fortuner", "Glanza", "Urban Cruiser", "Yaris", "Etios", "Camry", "Corolla", "Hilux", "Other"],
+    "Tata": ["Altroz", "Nexon", "Tiago", "Harrier", "Safari", "Tigor", "Punch", "Hexa", "Zest", "Bolt", "Other"],
+    "Mahindra": ["Scorpio", "XUV500", "Bolero", "Thar", "XUV300", "Marazzo", "KUV100", "XUV700", "TUV300", "Other"],
+    "Kia": ["Seltos", "Sonet", "Carnival", "Carens", "EV6", "Other"],
+    "Ford": ["Figo", "EcoSport", "Endeavour", "Aspire", "Freestyle", "Fiesta", "Ikon", "Other"],
+    "Volkswagen": ["Polo", "Vento", "Taigun", "Tiguan", "Virtus", "Jetta", "Passat", "Other"],
+    "Renault": ["Kwid", "Duster", "Triber", "Kiger", "Lodgy", "Captur", "Other"],
+    "Nissan": ["Magnite", "Kicks", "Terrano", "Micra", "Sunny", "Other"],
+    "Skoda": ["Rapid", "Octavia", "Superb", "Kushaq", "Slavia", "Kodiaq", "Other"],
+    "MG": ["Hector", "ZS EV", "Gloster", "Astor", "Other"],
+    "Jeep": ["Compass", "Meridian", "Wrangler", "Grand Cherokee", "Other"],
+    "Mercedes-Benz": ["A-Class", "C-Class", "E-Class", "S-Class", "GLA", "GLC", "GLE", "GLS", "Other"],
+    "BMW": ["3 Series", "5 Series", "7 Series", "X1", "X3", "X5", "Other"],
+    "Audi": ["A3", "A4", "A6", "Q3", "Q5", "Q7", "Other"],
+    "Chevrolet": ["Beat", "Spark", "Cruze", "Sail", "Enjoy", "Tavera", "Other"],
+    "Fiat": ["Punto", "Linea", "Avventura", "Urban Cross", "Other"],
+    "Datsun": ["Go", "Go Plus", "Redi-Go", "Other"],
+    "Isuzu": ["D-Max", "MU-X", "Other"],
+    "Jaguar": ["XE", "XF", "XJ", "F-Pace", "F-Type", "Other"],
+    "Land Rover": ["Discovery", "Range Rover", "Defender", "Evoque", "Velar", "Other"],
+    "Lexus": ["ES", "NX", "RX", "LS", "Other"],
+    "Mini": ["Cooper", "Countryman", "Convertible", "Other"],
+    "Mitsubishi": ["Pajero", "Outlander", "Montero", "Other"],
+    "Porsche": ["Cayenne", "Macan", "Panamera", "911", "Other"],
+    "Volvo": ["XC40", "XC60", "XC90", "S60", "S90", "Other"],
+    "Other": ["Other"]
+  };
+
+  const brandSelect = document.getElementById('brandSelect');
+  const modelSelect = document.getElementById('modelSelect');
+  const brandOtherContainer = document.getElementById('brandOtherContainer');
+  const brandOtherInput = document.getElementById('brandOtherInput');
+  const modelOtherContainer = document.getElementById('modelOtherContainer');
+  const modelOtherInput = document.getElementById('modelOtherInput');
+
+  // Auto-uppercase for vehicle number
+  document.querySelector('input[name="vehicle_number"]').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+
+  brandSelect.addEventListener('change', function() {
+    const brand = this.value;
+    
+    // Reset model selection
+    modelSelect.innerHTML = '<option value="" disabled selected>Select Model</option>';
+    modelOtherContainer.style.display = 'none';
+    modelOtherInput.value = '';
+    
+    // Handle brand "Other" option
+    if (brand === 'Other') {
+      brandOtherContainer.style.display = 'block';
+      brandOtherInput.required = true;
+      modelSelect.disabled = true;
+      modelSelect.innerHTML = '<option value="Other" selected>Other</option>';
+      modelOtherContainer.style.display = 'block';
+      modelOtherInput.required = true;
+    } else if (brand) {
+      brandOtherContainer.style.display = 'none';
+      brandOtherInput.required = false;
+      brandOtherInput.value = '';
+      modelSelect.disabled = false;
+      
+      // Add models for selected brand
+      brandModels[brand].forEach(function(model) {
+        const option = document.createElement('option');
+        option.value = model;
+        option.textContent = model;
+        modelSelect.appendChild(option);
+      });
+    } else {
+      brandOtherContainer.style.display = 'none';
+      brandOtherInput.required = false;
+      brandOtherInput.value = '';
+      modelSelect.disabled = true;
+    }
+  });
+
+  modelSelect.addEventListener('change', function() {
+    if (this.value === 'Other') {
+      modelOtherContainer.style.display = 'block';
+      modelOtherInput.required = true;
+    } else {
+      modelOtherContainer.style.display = 'none';
+      modelOtherInput.required = false;
+      modelOtherInput.value = '';
+    }
+  });
+
+  // Form validation with SweetAlert
+  document.querySelector('form').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    if (brandSelect.value === 'Other' && !brandOtherInput.value.trim()) {
+      isValid = false;
+      Swal.fire({
+        icon: 'error',
+        title: 'Brand Required',
+        text: 'Please enter the brand name',
+        confirmButtonColor: '#4e73df'
+      });
+      brandOtherInput.focus();
+    }
+    
+    if (modelSelect.value === 'Other' && !modelOtherInput.value.trim()) {
+      isValid = false;
+      Swal.fire({
+        icon: 'error',
+        title: 'Model Required',
+        text: 'Please enter the model name',
+        confirmButtonColor: '#4e73df'
+      });
+      modelOtherInput.focus();
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+    } else {
+      // Show loading state
+      const submitBtn = this.querySelector('button[type="submit"]');
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Adding Vehicle...';
+      submitBtn.disabled = true;
+    }
+  });
+});
+</script>
+
+{% endblock %}

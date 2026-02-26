@@ -1,0 +1,377 @@
+{% extends 'autocareapp/userhomepage.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Animation Libraries -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    /* Custom Styles */
+    .hero-section {
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{% static "car.jpeg" %}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0;
+        margin-bottom: 50px;
+    }
+    
+    .floating-card {
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .floating-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .team-member {
+        position: relative;
+        overflow: hidden;
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 20px;
+        border: 5px solid #fff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.5s ease;
+    }
+    
+    .team-member:hover {
+        transform: scale(1.1);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .team-member img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #003366;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: rotate(15deg) scale(1.2);
+        color: #003366;
+    }
+    
+    .parallax-section {
+        background: url('{% static "images/tools-bg.jpg" %}') fixed;
+        background-size: cover;
+        padding: 80px 0;
+        position: relative;
+        color: white;
+    }
+    
+    .parallax-overlay {
+        background: #003366;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .counter-box {
+        padding: 30px;
+        border-radius: 10px;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .counter-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .counter {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #003366;
+    }
+    
+    .scroll-animation {
+        opacity: 0;
+        transition: all 0.6s ease;
+    }
+    
+    .scroll-animation.animated {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section text-center animate__animated animate__fadeIn">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInDown">About AutoCare</h1>
+        <p class="lead animate__animated animate__fadeInUp animate__delay-1s">Driving excellence in auto service since 2023</p>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<div class="container mb-5" data-aos="fade-up">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <img src="{% static 'cargarage.jpeg' %}" alt="Our Garage" class="img-fluid rounded shadow-lg" data-aos="zoom-in">
+        </div>
+        <div class="col-lg-6">
+            <h2 class="text-primary mb-4">Our Story</h2>
+            <p class="lead">Founded in 2023, AutoCare began with a simple mission: to provide honest, reliable, and affordable vehicle maintenance services.</p>
+            <p>What started as a small garage with two mechanics has grown into Pune's most trusted auto service network, serving over 5,000 satisfied customers.</p>
+            <div class="mt-4" data-aos="fade-left">
+                <a href="#contact" class="btn btn-primary btn-lg px-4 me-2">Contact Us</a>
+                <a href="{% url 'services' %}" class="btn btn-outline-primary btn-lg px-4">Our Services</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Parallax Counter Section -->
+<section class="parallax-section mb-5">
+    <div class="parallax-overlay"></div>
+    <div class="container position-relative">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="counter-box">
+                    <div class="counter" data-count="5000">0</div>
+                    <h4>Happy Customers</h4>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="counter-box">
+                    <div class="counter" data-count="15">0</div>
+                    <h4> Mechanics</h4>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="counter-box">
+                    <div class="counter" data-count="12000">0</div>
+                    <h4>Services Completed</h4>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="counter-box">
+                    <div class="counter" data-count="98">0</div>
+                    <h4>Satisfaction</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<div class="container mb-5">
+    <h2 class="text-center text-primary mb-5" data-aos="fade-up">Why Choose AutoCare?</h2>
+    
+    <div class="row">
+        <div class="col-md-6 col-lg-3 mb-4" data-aos="flip-left" data-aos-delay="100">
+            <div class="card h-100 floating-card feature-card text-center p-4">
+                <i class="bi bi-shield-check feature-icon"></i>
+                <h4>Trusted Services</h4>
+                <p>All our mechanics are certified professionals with minimum 5 years experience.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4" data-aos="flip-left" data-aos-delay="200">
+            <div class="card h-100 floating-card feature-card text-center p-4">
+                <i class="bi bi-cash-coin feature-icon"></i>
+                <h4>Fair Pricing</h4>
+                <p>No hidden charges. We provide upfront pricing before any work begins.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4" data-aos="flip-left" data-aos-delay="300">
+            <div class="card h-100 floating-card feature-card text-center p-4">
+                <i class="bi bi-clock-history feature-icon"></i>
+                <h4>Quick Service</h4>
+                <p>90% of services completed within 2 hours. We value your time.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4" data-aos="flip-left" data-aos-delay="400">
+            <div class="card h-100 floating-card feature-card text-center p-4">
+                <i class="bi bi-award feature-icon"></i>
+                <h4>Quality Parts</h4>
+                <p>We use only OEM or equivalent quality parts for all repairs.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Section -->
+<div class="container mb-5">
+    <h2 class="text-center text-primary mb-5" data-aos="fade-up">Meet Our Team</h2>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+            <div class="text-center">
+                <div class="team-member">
+                    <img src="{% static 'member1.jpeg' %}" alt="Rajesh Kumar">
+                </div>
+                <h4>Rajesh Kumar</h4>
+                <p class="text-muted">Head Mechanic</p>
+                <p>15+ years experience specializing in engine diagnostics and repair.</p>
+                <div class="social-links">
+                    <a href="#" class="text-primary me-2"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-primary me-2"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="text-primary"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+            <div class="text-center">
+                <div class="team-member">
+                    <img src="{% static 'member2.jpeg' %}" alt="Priya Sharma">
+                </div>
+                <h4>Priya Sharma</h4>
+                <p class="text-muted">Service Manager</p>
+                <p>Customer satisfaction expert with 10 years in automotive service.</p>
+                <div class="social-links">
+                    <a href="#" class="text-primary me-2"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-primary me-2"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="text-primary"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="300">
+            <div class="text-center">
+                <div class="team-member">
+                    <img src="{% static 'member3.jpeg' %}" alt="Vikram Patel">
+                </div>
+                <h4>Vikram Patel</h4>
+                <p class="text-muted">Diagnostic Specialist</p>
+                <p>Electrical systems expert with advanced diagnostic certifications.</p>
+                <div class="social-links">
+                    <a href="#" class="text-primary me-2"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-primary me-2"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="text-primary"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="container mb-5" data-aos="fade-up">
+    <h2 class="text-center text-primary mb-5">What Our Customers Say</h2>
+    
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body text-center p-5">
+                                <img src="{% static 'customer1.jpeg' %}" class="rounded-circle mb-4" width="100" alt="Customer">
+                                <p class="lead mb-4">"AutoCare saved me thousands by catching an issue my dealer missed. Honest service at fair prices!"</p>
+                                <h5>Rahul Deshpande</h5>
+                                <p class="text-muted">Regular Customer Since 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body text-center p-5">
+                                <img src="{% static 'customer3.jpeg' %}" class="rounded-circle mb-4" width="100" alt="Customer">
+                                <p class="lead mb-4">"The team at AutoCare is phenomenal! They explain everything clearly and deliver on time, every time."</p>
+                                <h5>Neha Gupta</h5>
+                                <p class="text-muted">Business Fleet Manager</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<section id="contact" class="bg-primary text-white py-5" data-aos="fade-up">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Experience the AutoCare Difference?</h2>
+        <p class="lead mb-5">Book your service appointment today and join our family of satisfied customers.</p>
+        <a href="" class="btn btn-light btn-lg px-5 me-3 animate__animated animate__pulse animate__infinite">
+            <i class="bi bi-telephone me-2"></i> Contact Us
+        </a>
+        <a href="{% url 'book_service' %}" class="btn btn-outline-light btn-lg px-5">
+            <i class="bi bi-calendar-check me-2"></i> Book Online
+        </a>
+    </div>
+</section>
+
+<!-- JavaScript Libraries -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/noframework.waypoints.min.js"></script>
+
+<script>
+    // Initialize AOS animation
+    AOS.init({
+        duration: 1000,
+        once: true
+    });
+    
+    // Counter animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200;
+        
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = target / speed;
+                
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 1);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            
+            // Start counting when element is in view
+            new Waypoint({
+                element: counter.parentElement,
+                handler: function() {
+                    updateCount();
+                    this.destroy();
+                },
+                offset: '100%'
+            });
+        });
+    });
+    
+    // Scroll animations
+    window.addEventListener('scroll', function() {
+        const elements = document.querySelectorAll('.scroll-animation');
+        elements.forEach(element => {
+            const position = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (position < windowHeight - 100) {
+                element.classList.add('animated');
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,435 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoCare Hub - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            color: #032d58;
+            margin: 0;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: #01172c;
+            backdrop-filter: blur(70px);
+            -webkit-backdrop-filter: blur(70px);
+        }
+
+        .navbar-brand img {
+            max-height: 40px;
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo span {
+            color: red;
+        }
+
+        .navbar .nav-link {
+            color: #fff !important;
+            position: relative;
+            margin: 0 15px;
+        }
+
+        .navbar .nav-link::after {
+            content: "";
+            width: 0;
+            height: 3px;
+            background-color: red;
+            position: absolute;
+            left: 0;
+            bottom: 1px;
+            transition: 0.5s;
+        }
+
+        .navbar .nav-link:hover::after {
+            width: 70%;
+        }
+
+        .navbar .nav-link:hover {
+            color: #ddc511 !important;
+        }
+
+        /* Admin Dashboard Content */
+        .admin-hero {
+            background: url('{% static "admin-bg.jpg" %}') no-repeat center center;
+            background-size: cover;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .admin-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .admin-hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .admin-hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        /* Admin Cards Section */
+        .admin-cards {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+        }
+
+        .admin-cards h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #003366;
+            font-weight: 600;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .admin-card i {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #1b2a49;
+        }
+
+        .admin-card h5 {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1b2a49;
+        }
+
+        .admin-card p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .admin-card .btn {
+            background: #1b2a49;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .admin-card .btn:hover {
+            background: #f59e0b;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .admin-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 60px 0;
+            background: #1b2a49;
+            color: white;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #f59e0b;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #01172c;
+            color: #fff;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .admin-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .admin-hero p {
+                font-size: 1rem;
+            }
+            
+            .admin-card {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'adminhome' %}">
+                <img src="{% static 'auto logo.png' %}" alt="Logo" style="max-height: 41px; width: auto; margin-right: -14px;"/>
+                <div class="logo"><span>are</span> Hub <small style="font-size: 0.6em; color: #f59e0b;">Admin</small></div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="color: #efeded"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'adminhome' %}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'adminvehicle' %}">Vehicles</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'managebookings' %}">Bookings</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="{% url 'adminlogout' %}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}
+    <!-- Hero Section -->
+    <section class="admin-hero">
+        <div class="admin-hero-content">
+            <h1>Admin Dashboard</h1>
+            <p>Manage all aspects of your AutoCare Hub service center</p>
+            <a href="{% url 'managebookings' %}" class="btn btn-warning btn-lg">View Recent Bookings</a>
+        </div>
+    </section>
+
+    <!-- Admin Cards Section -->
+    <section class="admin-cards">
+        <div class="container">
+            <h2>Quick Actions</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="admin-card">
+                        <i class="ph ph-folder-plus"></i>
+                        <h5>Manage Services</h5>
+                        <p>Add, edit or remove services offered by your center</p>
+                        <a href="{% url 'services' %}" class="btn">Go to Services</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="admin-card">
+                        <i class="ph ph-car"></i>
+                        <h5>View Vehicles</h5>
+                        <p>Manage all customer vehicles in the system</p>
+                        <a href="{% url 'adminvehicle' %}" class="btn">View Vehicles</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="admin-card">
+                        <i class="ph ph-list-checks"></i>
+                        <h5>Manage Bookings</h5>
+                        <p>View and update all service appointments</p>
+                        <a href="{% url 'managebookings' %}" class="btn">Manage Bookings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <i class="ph ph-calendar-check"></i>
+                        <h3>154</h3>
+                        <p>Today's Appointments</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <i class="ph ph-car"></i>
+                        <h3>892</h3>
+                        <p>Vehicles Serviced</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <i class="ph ph-users"></i>
+                        <h3>436</h3>
+                        <p>Active Customers</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <i class="ph ph-currency-circle-dollar"></i>
+                        <h3>$24,587</h3>
+                        <p>Monthly Revenue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Activity Section -->
+    <section class="admin-cards" style="background: white;">
+        <div class="container">
+            <h2>Recent Activity</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="admin-card" style="text-align: left;">
+                        <h5><i class="ph ph-clock-countdown me-2"></i>Pending Actions</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                5 Unassigned Services
+                                <span class="badge bg-warning rounded-pill">View</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                12 Customer Messages
+                                <span class="badge bg-warning rounded-pill">Respond</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                3 Pending Approvals
+                                <span class="badge bg-warning rounded-pill">Review</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="admin-card" style="text-align: left;">
+                        <h5><i class="ph ph-trend-up me-2"></i>Performance Metrics</h5>
+                        <div class="mb-3">
+                            <h6>Service Completion Rate</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 92%"></div>
+                            </div>
+                            <small>92% (Above target)</small>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Customer Satisfaction</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 88%"></div>
+                            </div>
+                            <small>88% (Good)</small>
+                        </div>
+                        <div>
+                            <h6>Repeat Business</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 76%"></div>
+                            </div>
+                            <small>76% (Can improve)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 AutoCare Hub. All rights reserved.</p>
+            <p>
+                <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact</a>
+            </p>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <script>
+        // Simple animation for cards on scroll
+        const cards = document.querySelectorAll('.admin-card, .stat-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        cards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

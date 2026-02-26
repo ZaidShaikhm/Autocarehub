@@ -1,0 +1,359 @@
+{% extends 'autocareapp/adminmenu.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Modern Table Styles */
+    .vehicle-table {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-dark {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+    }
+    
+    .table-hover tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(52, 152, 219, 0.1);
+        transform: translateX(5px);
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    .table-row {
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    /* Staggered animations */
+    .table-row:nth-child(1) { animation-delay: 0.1s; }
+    .table-row:nth-child(2) { animation-delay: 0.2s; }
+    .table-row:nth-child(3) { animation-delay: 0.3s; }
+    .table-row:nth-child(4) { animation-delay: 0.4s; }
+    .table-row:nth-child(5) { animation-delay: 0.5s; }
+    
+    /* Badge for vehicle number */
+    .vehicle-number {
+        background-color: #e3f2fd;
+        color: #1976d2;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+    
+    /* Empty state styling */
+    .empty-state {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 40px 20px;
+    }
+    
+    /* Search box styling */
+    .search-box {
+        max-width: 400px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="bi bi-car-front-fill text-primary me-2"></i>
+            Registered Vehicles
+        </h2>
+        
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search vehicles...">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive vehicle-table">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                    <th>Vehicle Number</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehicle in vehicles %}
+                <tr class="table-row">
+                    <td>{{ vehicle.id }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="me-2">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">{{ vehicle.user.username|default:"N/A" }}</div>
+                                <small class="text-muted">{{ vehicle.user.email|default:"No email" }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ vehicle.brand|default:"N/A" }}</td>
+                    <td>{{ vehicle.model|default:"N/A" }}</td>
+                    <td>{{ vehicle.year|default:"N/A" }}</td>
+                    <td><span class="vehicle-number">{{ vehicle.vehicle_number|default:"N/A" }}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" 
+                                data-bs-target="#detailModal" data-vehicle-id="{{ vehicle.id }}"
+                                aria-label="View vehicle details">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 empty-state">
+                        <i class="bi bi-car-front text-muted" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 text-muted">No Vehicles Found</h5>
+                        <p>There are currently no registered vehicles in the system.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if vehicles.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if vehicles.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ vehicles.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+            
+            {% for num in vehicles.paginator.page_range %}
+            {% if vehicles.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            
+            {% if vehicles.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ vehicles.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ vehicles.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Vehicle Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Vehicle Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="vehicleDetailContent">
+                <!-- Content will be loaded via AJAX -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search functionality
+    document.getElementById('searchButton').addEventListener('click', function() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr.table-row');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Vehicle detail modal
+    const detailModal = document.getElementById('detailModal');
+    detailModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const vehicleId = button.getAttribute('data-vehicle-id');
+        const modalContent = document.getElementById('vehicleDetailContent');
+        
+        // Show loading spinner
+        modalContent.innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `;
+        
+        // Load vehicle details via AJAX
+        fetch(`/admin/vehicles/${vehicleId}/details/`)
+            .then(response => response.json())
+            .then(data => {
+                modalContent.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Vehicle Information</h5>
+                            <ul class="list-group list-group-flush mb-3">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Brand:</span>
+                                    <span class="fw-bold">${data.brand || 'N/A'}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Model:</span>
+                                    <span class="fw-bold">${data.model || 'N/A'}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Year:</span>
+                                    <span class="fw-bold">${data.year || 'N/A'}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Vehicle Number:</span>
+                                    <span class="fw-bold">${data.vehicle_number || 'N/A'}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Owner Information</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Name:</span>
+                                    <span class="fw-bold">${data.user?.username || 'N/A'}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Email:</span>
+                                    <span class="fw-bold">${data.user?.email || 'No email'}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Phone:</span>
+                                    <span class="fw-bold">${data.user?.phone || 'N/A'}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Registered On:</span>
+                                    <span class="fw-bold">${data.created_at ? new Date(data.created_at).toLocaleDateString() : 'N/A'}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    ${data.service_history ? `
+                    <div class="mt-4">
+                        <h5>Service History</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Service Type</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.service_history.map(service => `
+                                        <tr>
+                                            <td>${service.date ? new Date(service.date).toLocaleDateString() : 'N/A'}</td>
+                                            <td>${service.type || 'N/A'}</td>
+                                            <td><span class="badge ${service.status === 'Completed' ? 'bg-success' : 
+                                               service.status === 'Pending' ? 'bg-warning text-dark' : 'bg-secondary'}">
+                                                ${service.status || 'Unknown'}
+                                            </span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modalContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        Failed to load vehicle details. Please try again.
+                    </div>
+                `;
+            });
+    });
+
+    // Confirm delete function
+    function confirmDelete(vehicleId) {
+        if (!vehicleId) {
+            console.error('Invalid vehicle ID');
+            return false;
+        }
+
+        fetch(`/admin/vehicles/${vehicleId}/delete/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                location.reload();
+            } else {
+                throw new Error(data ? data.message : 'Unknown error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to delete vehicle: ' + error.message);
+        });
+        
+        return false;
+    }
+</script>
+
+{% endblock %}

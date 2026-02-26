@@ -1,0 +1,110 @@
+{% extends 'Autocareapp/adminmenu.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-10">
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi bi-info-circle-fill me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Add Service Card -->
+            <div class="card shadow rounded border-0 mb-4">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(90deg, #0062E6, #33AEFF);">
+                    <h4 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Add New Service</h4>
+                </div>
+                <div class="card-body bg-light">
+                    <form method="POST" action="{% url 'services' %}">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold">Service Name</label>
+                                <input type="text" class="form-control shadow-sm" name="name" required placeholder="e.g., Engine Oil Change">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="price" class="form-label fw-semibold">Price (₹)</label>
+                                <input type="number" class="form-control shadow-sm" name="price" required placeholder="e.g., 799">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="description" class="form-label fw-semibold">Description</label>
+                                <textarea class="form-control shadow-sm" name="description" rows="3" required placeholder="Brief description of the service..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="duration" class="form-label fw-semibold">Duration (HH:MM:SS)</label>
+                                <input type="text" class="form-control shadow-sm" name="duration" required placeholder="e.g., 01:30:00">
+                            </div>
+                        </div>
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-check-circle me-1"></i>Add Service
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Service List -->
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-wrench-adjustable-circle me-2"></i>Available Services</h5>
+                </div>
+                <div class="card-body bg-white" style="max-height: 400px; overflow-y: auto;">
+                    {% if services %}
+                        <table class="table table-hover table-bordered align-middle">
+                            <thead class="table-dark text-center">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in services %}
+                                <tr>
+                                    <th scope="row" class="text-center">{{ forloop.counter }}</th>
+                                    <td>{{ service.name }}</td>
+                                    <td>{{ service.description }}</td>
+                                    <td>₹{{ service.amount }}</td>
+                                    <td>{{ service.duration }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="text-muted">No services added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body::-webkit-scrollbar {
+        width: 8px;
+    }
+    body::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 10px;
+    }
+    body::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        border-radius: 0.5rem;
+    }
+</style>
+
+{% endblock %}
