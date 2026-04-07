@@ -1,0 +1,394 @@
+/* static/css/theme.css - Modern Premium Redesign */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Light Theme Variables */
+    --bg-main: #fafafa;
+    --bg-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    
+    /* Neon Orange & Slate Accents */
+    --accent-primary: #f97316; /* Vibrant Orange */
+    --accent-hover: #ea580c;
+    --accent-soft: rgba(249, 115, 22, 0.1);
+    
+    --brand-dark: #0f172a;
+    --brand-blue: #3b82f6; /* Electric Blue secondary */
+    
+    /* UI Elements */
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --card-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Softer shadow */
+    --hover-shadow: 0 10px 30px rgba(249, 115, 22, 0.15); /* Softer hover */
+    
+    --nav-bg: rgba(250, 250, 250, 0.85);
+    --btn-radius: 100px; /* Pill buttons */
+    --card-radius: 20px; /* Slightly softer radius */
+}
+
+[data-theme="dark"] {
+    /* Dark Theme Variables */
+    --bg-main: #121212; /* Simple clean carbon black */
+    --bg-secondary: #1e1e1e;
+    --text-primary: #ededed;
+    --text-secondary: #a1a1aa;
+    
+    /* UI Elements */
+    --card-bg: rgba(30, 30, 30, 0.6);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --hover-shadow: 0 10px 30px rgba(249, 115, 22, 0.2);
+    
+    --nav-bg: rgba(18, 18, 18, 0.85);
+}
+
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+p, span, li, td, th {
+    color: var(--text-secondary);
+}
+
+/* Override Bootstrap Text Utilities */
+.text-primary { color: var(--accent-primary) !important; }
+.text-secondary, .text-muted { color: var(--text-secondary) !important; }
+.text-dark { color: var(--text-primary) !important; }
+.text-light { color: #ffffff !important; }
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+.navbar {
+    background-color: var(--nav-bg) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--card-border);
+    transition: background-color 0.5s ease, padding 0.3s ease;
+    padding: 15px 0 !important;
+}
+
+.navbar .nav-link {
+    color: var(--text-primary) !important;
+    font-weight: 500;
+    padding: 8px 16px !important;
+    margin: 0 4px;
+    border-radius: var(--btn-radius);
+    transition: all 0.3s ease;
+}
+
+.navbar .nav-link:hover, .navbar .nav-link.active {
+    background-color: var(--accent-soft);
+    color: var(--accent-primary) !important;
+}
+
+.logo {
+    color: var(--text-primary);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+.logo span {
+    color: var(--accent-primary) !important;
+}
+
+/* ==========================================================================
+   Cards & Containers (Glassmorphism)
+   ========================================================================== */
+.service-card, .testimonial-card, .stats-card, .login-container, .admin-card, .stat-card, .card {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border) !important;
+    border-radius: var(--card-radius) !important;
+    box-shadow: var(--glass-shadow) !important;
+    color: var(--text-primary);
+}
+
+/* Specific Grid Cards (Sizing & Animations) */
+.service-card, .testimonial-card, .stats-card, .admin-card, .stat-card, .service-item {
+    padding: 20px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-card:hover, .testimonial-card:hover, .admin-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: var(--hover-shadow) !important;
+    border-color: var(--accent-primary) !important;
+}
+
+/* Fix text and images inside cards */
+.service-card img {
+    width: 50px;
+    height: auto;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover img {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.service-card h5, .admin-card h5, .card-title {
+    color: var(--text-primary);
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.service-card p, .admin-card p, .card-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.card i.feature-icon, .admin-card i.ph {
+    color: var(--accent-primary) !important;
+    background: var(--accent-soft);
+    width: 45px;
+    height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    font-size: 22px;
+    transition: all 0.3s ease;
+}
+
+.card:hover i.feature-icon, .admin-card:hover i.ph {
+    transform: rotate(10deg) scale(1.1);
+    background: var(--accent-primary);
+    color: white !important;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.btn {
+    border-radius: var(--btn-radius) !important;
+    padding: 12px 30px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.btn-primary, .btn-custom {
+    background: linear-gradient(135deg, var(--accent-primary), #ea580c) !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+}
+
+.btn-primary:hover, .btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(249, 115, 22, 0.5);
+}
+
+.btn-outline-primary {
+    background: transparent !important;
+    border: 2px solid var(--accent-primary) !important;
+    color: var(--accent-primary) !important;
+}
+
+.btn-outline-primary:hover {
+    background: var(--accent-primary) !important;
+    color: white !important;
+}
+
+/* ==========================================================================
+   Forms & Inputs
+   ========================================================================== */
+.form-control, .form-select {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 2px solid var(--card-border) !important;
+    border-radius: 16px !important;
+    padding: 15px 20px !important;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 4px var(--accent-soft) !important;
+    border-color: var(--accent-primary) !important;
+    background-color: var(--bg-main) !important;
+}
+
+label {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    margin-bottom: 8px;
+    margin-left: 5px;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+.table-responsive {
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-shadow: var(--glass-shadow);
+}
+
+table {
+    margin-bottom: 0 !important;
+    background-color: var(--card-bg) !important;
+}
+
+th, .table-dark {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--card-border) !important;
+    padding: 15px !important;
+}
+
+td {
+    color: var(--text-secondary) !important;
+    border-bottom: 1px solid var(--card-border) !important;
+    padding: 15px !important;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--accent-soft) !important;
+    transform: scale(1.01);
+}
+
+/* ==========================================================================
+   Specific Layout & Overrides
+   ========================================================================== */
+/* Hero Sections */
+.hero, .admin-hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 35vh;
+    min-height: 250px;
+    position: relative;
+    border-radius: 0 0 30px 30px;
+    overflow: hidden;
+    margin-bottom: 50px;
+    box-shadow: var(--glass-shadow);
+    color: white;
+    background-size: cover;
+    background-position: center center;
+    background-color: var(--brand-dark);
+}
+
+.hero {
+    /* Since we can't use Django tags in CSS, we'll apply a transparent gradient here and let the inline style or a generic background fall back if needed. But it's best to apply the actual image in HTML. For now, solid clean gradient fallback. */
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.9)), url('/static/simple.jpg') no-repeat center center / cover;
+}
+
+.admin-hero {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.9)), url('/static/admin-bg.jpg') no-repeat center center / cover;
+}
+
+.hero-overlay, .admin-hero::before {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(2, 6, 23, 0.5) 0%, rgba(2, 6, 23, 0.9) 100%);
+    z-index: 1;
+}
+
+.hero-content, .admin-hero-content, .hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-content h1, .admin-hero h1, .hero h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 25px;
+}
+
+[data-theme="light"] .hero-content h1, [data-theme="light"] .admin-hero h1 {
+    -webkit-text-fill-color: #fff;
+}
+
+/* Sections */
+.services-section {
+    background-color: transparent !important;
+    padding: 80px 0;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    border: none !important;
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(10px);
+    color: var(--accent-primary) !important;
+    box-shadow: var(--hover-shadow) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.15) rotate(15deg) !important;
+    background: var(--accent-primary) !important;
+    color: white !important;
+}
+
+/* Footer Section */
+.footer {
+    background-color: var(--nav-bg);
+    color: var(--text-primary);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--card-border);
+    padding: 30px 0;
+    text-align: center;
+    margin-top: 40px;
+}
+.footer p {
+    margin-bottom: 5px;
+}
+.footer a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+.footer a:hover {
+    text-decoration: underline;
+}
