@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w@9e-wpnxcp5msx-isifi2tkeo$aqvf$#k$etm5724@%1b(l%n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -139,3 +139,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'support@autocare.com'
 EMAIL_HOST_PASSWORD = 'your-email-password'
 DEFAULT_FROM_EMAIL = 'noreply@autocare.com'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
